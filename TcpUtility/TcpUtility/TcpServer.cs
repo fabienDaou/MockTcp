@@ -9,8 +9,8 @@ namespace TcpUtility
     {
         private readonly TcpListener tcpListener;
 
-        private bool isStillAccepting = true;
-        private readonly object isStillAcceptingLock = new object();
+        private bool startAccepting;
+        private readonly object startAcceptingLock = new object();
 
         public event EventHandler<AcceptedClientEventArgs> AcceptedClient;
 
@@ -21,58 +21,59 @@ namespace TcpUtility
 
         public void Start()
         {
+            lock (startAcceptingLock)
+            {
+                startAccepting = true;
+                tcpListener.Start();
+            }
+
+            BeginAccept();
+        }
+
+        public void Stop()
+        {
+            lock (startAcceptingLock)
+            {
+                startAccepting = false;
+
+                try
+                {
+                    tcpListener.Stop();
+                }
+                catch (SocketException ex)
+                {
+                    Logger.Log($"The Tcp server could not properly stop.{ex.Message}", LogLevel.Warning);
+                }
+            }
+        }
+
+        private void BeginAccept()
+        {
             try
             {
-                tcpListener.Start();
-
-                tcpListener.BeginAcceptTcpClient(new AsyncCallback(TcpClientAcceptedCallback), tcpListener);
+                tcpListener.BeginAcceptTcpClient(new AsyncCallback(TcpClientAcceptedCallback), null);
             }
-            catch(SocketException ex)
+            catch (Exception ex) when (ex is SocketException || ex is ObjectDisposedException)
             {
                 Logger.Log(ex.Message, LogLevel.Error);
             }
         }
 
-        public void Stop()
-        {
-            lock (isStillAcceptingLock)
-            {
-                isStillAccepting = false;
-            }
-
-            try
-            {
-                tcpListener.Stop();
-            }
-            catch (SocketException ex)
-            {
-                Logger.Log($"The Tcp server could not properly stop.{ex.Message}", LogLevel.Warning);
-            }
-        }
-
         private void TcpClientAcceptedCallback(IAsyncResult ar)
         {
-            var listener = ar.AsyncState as TcpListener;
-            var acceptedTcpClient = listener.EndAcceptTcpClient(ar);
+            var acceptedTcpClient = tcpListener.EndAcceptTcpClient(ar);
 
             var args = new AcceptedClientEventArgs(new AcceptedTcpClient(acceptedTcpClient));
 
-            lock (isStillAcceptingLock)
+            lock (startAcceptingLock)
             {
-                if (isStillAccepting)
+                if (startAccepting)
                 {
-                    try
-                    {
-                        listener.BeginAcceptTcpClient(new AsyncCallback(TcpClientAcceptedCallback), listener);
-                    }
-                    catch (Exception ex) when (ex is SocketException || ex is ObjectDisposedException)
-                    {
-                        Logger.Log(ex.Message, LogLevel.Error);
-                    }
+                    BeginAccept();
                 }
             }
                         
-            AcceptedClient?.Invoke(listener, args);
+            AcceptedClient?.Invoke(tcpListener, args);
         }
     }
 }
