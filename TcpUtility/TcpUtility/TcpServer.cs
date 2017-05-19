@@ -48,7 +48,6 @@ namespace TcpUtility
             var acceptedTcpClient = listener.EndAcceptTcpClient(ar);
 
             var args = new AcceptedClientEventArgs(new AcceptedTcpClient(acceptedTcpClient));
-            AcceptedClient?.Invoke(listener, args);
 
             try
             {
@@ -58,6 +57,8 @@ namespace TcpUtility
             {
                 Logger.Log(ex.Message, LogLevel.Error);
             }
+            
+            AcceptedClient?.Invoke(listener, args);
         }
     }
 }
