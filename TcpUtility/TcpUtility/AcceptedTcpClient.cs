@@ -41,14 +41,14 @@ namespace TcpUtility
 
         private void StartReceiving()
         {
-            var state = new StateObject(tcpClient.Client, buffer);
+            var state = new REadStateObject(tcpClient.Client, buffer);
             // TODO: handle exceptions
             tcpClient.Client.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, new AsyncCallback(ReadCallback), state);
         }
 
         private void ReadCallback(IAsyncResult ar)
         {
-            var state = ar.AsyncState as StateObject;
+            var state = ar.AsyncState as REadStateObject;
 
             var socket = state.Socket;
 
@@ -70,12 +70,12 @@ namespace TcpUtility
             }
         }
 
-        private class StateObject
+        private class REadStateObject
         {
             public Socket Socket { get; }
             public byte[] Buffer { get; }
 
-            public StateObject(Socket socket, byte[] buffer)
+            public REadStateObject(Socket socket, byte[] buffer)
             {
                 Socket = socket;
                 Buffer = buffer;
