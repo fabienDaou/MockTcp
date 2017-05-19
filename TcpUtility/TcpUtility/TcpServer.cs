@@ -9,6 +9,9 @@ namespace TcpUtility
     {
         private readonly TcpListener tcpListener;
 
+        private bool isStillAccepting = true;
+        private readonly object isStillAcceptingLock = new object();
+
         public event EventHandler<AcceptedClientEventArgs> AcceptedClient;
 
         public TcpServer(int listeningPort)
@@ -32,6 +35,11 @@ namespace TcpUtility
 
         public void Stop()
         {
+            lock (isStillAcceptingLock)
+            {
+                isStillAccepting = false;
+            }
+
             try
             {
                 tcpListener.Stop();
@@ -49,16 +57,21 @@ namespace TcpUtility
 
             var args = new AcceptedClientEventArgs(new AcceptedTcpClient(acceptedTcpClient));
 
-            try
+            lock (isStillAcceptingLock)
             {
-                // TODO: add protected boolean to prevent a new BeginAccept after stop is called.
-                listener.BeginAcceptTcpClient(new AsyncCallback(TcpClientAcceptedCallback), listener);
+                if (isStillAccepting)
+                {
+                    try
+                    {
+                        listener.BeginAcceptTcpClient(new AsyncCallback(TcpClientAcceptedCallback), listener);
+                    }
+                    catch (Exception ex) when (ex is SocketException || ex is ObjectDisposedException)
+                    {
+                        Logger.Log(ex.Message, LogLevel.Error);
+                    }
+                }
             }
-            catch(Exception ex) when (ex is SocketException || ex is ObjectDisposedException)
-            {
-                Logger.Log(ex.Message, LogLevel.Error);
-            }
-            
+                        
             AcceptedClient?.Invoke(listener, args);
         }
     }
