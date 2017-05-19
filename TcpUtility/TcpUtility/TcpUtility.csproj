@@ -43,6 +43,7 @@
     <Compile Include="CustomEventArgs\AcceptedClientEventArgs.cs" />
     <Compile Include="AcceptedTcpClient.cs" />
     <Compile Include="CustomEventArgs\DataReceivedEventArgs.cs" />
+    <Compile Include="DataStreamingTcpServer.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="LogLevel.cs" />
     <Compile Include="TcpServer.cs" />

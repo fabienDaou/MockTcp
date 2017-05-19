@@ -12,8 +12,8 @@ namespace TestApp
         {
             Task.Factory.StartNew(() =>
             {
-                var server = new TcpServer(10002);
-                server.AcceptedClient += Server_AcceptedClient;
+                var server = new DataStreamingTcpServer(10002);
+                server.DataReceived += DataStreamingTcpServer_DataReceived;
 
                 server.Start();
             });
@@ -22,13 +22,7 @@ namespace TestApp
             manualResetEvent.WaitOne();
         }
 
-        private static void Server_AcceptedClient(object source, AcceptedClientEventArgs args)
-        {
-            Logger.Log($"New client accepted.{args.TcpClient.RemoteEndPoint}" , LogLevel.Info);
-            args.TcpClient.DataReceived += AcceptedTcpClient_DataReceived;
-        }
-
-        private static void AcceptedTcpClient_DataReceived(object source, DataReceivedEventArgs args)
+        private static void DataStreamingTcpServer_DataReceived(object source, DataReceivedEventArgs args)
         {
             var acceptedTcpClient = source as AcceptedTcpClient;
             Logger.Log($"DataReceived from {acceptedTcpClient.RemoteEndPoint}:{Encoding.Default.GetString(args.Data)}", LogLevel.Info);
