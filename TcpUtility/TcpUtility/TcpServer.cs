@@ -51,6 +51,7 @@ namespace TcpUtility
 
             try
             {
+                // TODO: add protected boolean to prevent a new BeginAccept after stop is called.
                 listener.BeginAcceptTcpClient(new AsyncCallback(TcpClientAcceptedCallback), listener);
             }
             catch(Exception ex) when (ex is SocketException || ex is ObjectDisposedException)
