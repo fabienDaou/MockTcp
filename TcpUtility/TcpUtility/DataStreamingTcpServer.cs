@@ -4,7 +4,7 @@ using TcpUtility.CustomEventArgs;
 
 namespace TcpUtility
 {
-    public class DataStreamingTcpServer
+    public sealed class DataStreamingTcpServer : IDisposable
     {
         private TcpServer tcpServer;
 
@@ -16,6 +16,12 @@ namespace TcpUtility
         {
             tcpServer = new TcpServer(listeningPort);
             tcpServer.AcceptedClient += TcpServer_AcceptedClient;
+        }
+
+        public void Dispose()
+        {
+            cancelReceiveTokenSource?.Dispose();
+            cancelReceiveTokenSource = null;
         }
 
         public void Start()
