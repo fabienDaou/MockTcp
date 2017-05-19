@@ -20,7 +20,7 @@ namespace TcpUtility
         {
             try
             {
-                return tcpClient.Client.Receive(buffer);
+                return tcpClient.Client?.Receive(buffer) ?? 0;
             }
             catch (SocketException)
             {
