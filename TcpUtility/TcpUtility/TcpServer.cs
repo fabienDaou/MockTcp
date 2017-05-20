@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net;
 using System.Net.Sockets;
 using TcpUtility.CustomEventArgs;
 
@@ -7,7 +6,7 @@ namespace TcpUtility
 {
     public class TcpServer
     {
-        private readonly TcpListener tcpListener;
+        private ITcpListener tcpListener;
 
         private bool startAccepting;
         private readonly object startAcceptingLock = new object();
@@ -16,7 +15,7 @@ namespace TcpUtility
 
         public TcpServer(int listeningPort)
         {
-            tcpListener = new TcpListener(IPAddress.Any, listeningPort);
+            tcpListener = MultiSourceTcpListener.Create(listeningPort);
         }
 
         public void Start()

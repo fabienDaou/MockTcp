@@ -11,6 +11,8 @@ namespace TcpUtility
 
         public IPEndPoint RemoteEndPoint => (IPEndPoint)tcpClient.Client.RemoteEndPoint;
 
+        public TcpClient TcpClient => tcpClient;
+
         public AcceptedTcpClient(TcpClient client)
         {
             tcpClient = client;

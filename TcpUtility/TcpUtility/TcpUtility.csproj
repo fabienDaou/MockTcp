@@ -44,8 +44,10 @@
     <Compile Include="AcceptedTcpClient.cs" />
     <Compile Include="CustomEventArgs\DataReceivedEventArgs.cs" />
     <Compile Include="DataStreamingTcpServer.cs" />
+    <Compile Include="ITcpListener.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="LogLevel.cs" />
+    <Compile Include="MultiSourceTcpListener.cs" />
     <Compile Include="TcpServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
