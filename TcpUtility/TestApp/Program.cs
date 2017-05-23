@@ -12,7 +12,7 @@ namespace TestApp
         {
             Task.Factory.StartNew(() =>
             {
-                var server = new DataStreamingTcpServer(10002);
+                var server = new DataStreamingTcpServer(new TcpServer(10002));
                 server.DataReceived += DataStreamingTcpServer_DataReceived;
 
                 server.Start();
