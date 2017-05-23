@@ -57,11 +57,23 @@ namespace TcpUtility
 
         private void ReadFromTcpClient(AcceptedTcpClient tcpClient)
         {
+            CancellationToken cancelReceiveToken;
+            lock (isStartedLock)
+            {
+                if (!isStarted) return;
+                cancelReceiveToken = cancelReceiveTokenSource.Token;
+            }
+
+            ConsumeReceivedBytes(tcpClient, cancelReceiveToken);
+        }
+
+        private void ConsumeReceivedBytes(AcceptedTcpClient tcpClient, CancellationToken cancelReceiveToken)
+        {
             bool isConnected = true;
 
             var buffer = new byte[1024];
 
-            while (isConnected && !cancelReceiveTokenSource.Token.IsCancellationRequested)
+            while (isConnected && !cancelReceiveToken.IsCancellationRequested)
             {
                 int bytesReceived = tcpClient.Receive(buffer);
                 if (bytesReceived > 0)
