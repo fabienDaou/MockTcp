@@ -6,7 +6,7 @@ namespace TcpUtility
 {
     public sealed class DataStreamingTcpServer
     {
-        private TcpServer tcpServer;
+        private ITcpServer tcpServer;
 
         private CancellationTokenSource cancelReceiveTokenSource;
 
