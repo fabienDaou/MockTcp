@@ -4,7 +4,7 @@ using TcpUtility.CustomEventArgs;
 
 namespace TcpUtility
 {
-    public class TcpServer : ITcpServer
+    public sealed class TcpServer : ITcpServer
     {
         private ITcpListener tcpListener;
 
