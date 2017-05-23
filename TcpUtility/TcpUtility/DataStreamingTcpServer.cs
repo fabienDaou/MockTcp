@@ -4,34 +4,46 @@ using TcpUtility.CustomEventArgs;
 
 namespace TcpUtility
 {
-    public sealed class DataStreamingTcpServer : IDisposable
+    public sealed class DataStreamingTcpServer
     {
         private TcpServer tcpServer;
 
-        private CancellationTokenSource cancelReceiveTokenSource = new CancellationTokenSource();
+        private CancellationTokenSource cancelReceiveTokenSource;
+
+        private bool isStarted = false;
+        private readonly object isStartedLock = new object();
 
         public event EventHandler<DataReceivedEventArgs> DataReceived;
 
         public DataStreamingTcpServer(int listeningPort)
         {
             tcpServer = new TcpServer(listeningPort);
-            tcpServer.AcceptedClient += TcpServer_AcceptedClient;
-        }
-
-        public void Dispose()
-        {
-            cancelReceiveTokenSource?.Dispose();
-            cancelReceiveTokenSource = null;
         }
 
         public void Start()
         {
-            tcpServer.Start();
+            lock (isStartedLock)
+            {
+                if (!isStarted)
+                {
+                    cancelReceiveTokenSource = new CancellationTokenSource();
+                    tcpServer.AcceptedClient += TcpServer_AcceptedClient;
+                    tcpServer.Start();
+                    isStarted = true;
+                }
+            }
         }
 
         public void Stop()
         {
-            cancelReceiveTokenSource.Cancel();
+            lock (isStartedLock)
+            {
+                tcpServer.AcceptedClient -= TcpServer_AcceptedClient;
+                cancelReceiveTokenSource?.Cancel();
+                cancelReceiveTokenSource?.Dispose();
+                cancelReceiveTokenSource = null;
+                isStarted = false;
+            }
         }
 
         private void TcpServer_AcceptedClient(object source, AcceptedClientEventArgs args)
