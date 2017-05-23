@@ -9,25 +9,12 @@ namespace TcpUtility.Tests.Unit
     [TestFixture]
     public class DataStreamingTcpServerTests
     {
-        [Test]
-        public void Ctor_ConstructorCalled_TcpServerInstanciated()
+        private Mock<ITcpServer> tcpServerMock;
+
+        [SetUp]
+        public void Setup()
         {
-            Smock.Run(context =>
-            {
-                // Arrange
-                var tcpListenerMock = new Mock<ITcpListener>();
-
-                
-                context.Setup(() => MultiSourceTcpListener.Create(It.IsAny<int>()))
-                    .Returns(tcpListenerMock.Object)
-                    .Verifiable();
-                
-                // Act
-                var dataStreamingTcpServer = new DataStreamingTcpServer(0);
-
-                // Assert
-                context.Verify();
-            });
+            tcpServerMock = new Mock<ITcpServer>();
         }
 
         [Test]
@@ -37,13 +24,12 @@ namespace TcpUtility.Tests.Unit
             {
                 // Arrange
                 var tcpListenerMock = new Mock<ITcpListener>();
-
-
+                
                 context.Setup(() => MultiSourceTcpListener.Create(It.IsAny<int>()))
                     .Returns(tcpListenerMock.Object);
 
                 // Act
-                var dataStreamingTcpServer = new DataStreamingTcpServer(0);
+                var dataStreamingTcpServer = new DataStreamingTcpServer(new TcpServer(0));
                 dataStreamingTcpServer.Start();
 
                 // Assert
@@ -58,7 +44,7 @@ namespace TcpUtility.Tests.Unit
         public void Start_CallTwice_DoesNotThrow()
         {
             // Arrange
-            var dataStreamingTcpServer = new DataStreamingTcpServer(0);
+            var dataStreamingTcpServer = new DataStreamingTcpServer(tcpServerMock.Object);
 
             // Assert
             Assert.DoesNotThrow(() =>
@@ -79,7 +65,7 @@ namespace TcpUtility.Tests.Unit
                 context.Setup(() => MultiSourceTcpListener.Create(It.IsAny<int>()))
                     .Returns(tcpListenerMock.Object);
 
-                var dataStreamingTcpServer = new DataStreamingTcpServer(0);
+                var dataStreamingTcpServer = new DataStreamingTcpServer(new TcpServer(0));
                 dataStreamingTcpServer.Start();
 
                 // Act
@@ -96,7 +82,7 @@ namespace TcpUtility.Tests.Unit
         public void Stop_CallTwice_DoesNotThrow()
         {
             // Arrange
-            var dataStreamingTcpServer = new DataStreamingTcpServer(0);
+            var dataStreamingTcpServer = new DataStreamingTcpServer(tcpServerMock.Object);
             dataStreamingTcpServer.Start();
 
             // Assert

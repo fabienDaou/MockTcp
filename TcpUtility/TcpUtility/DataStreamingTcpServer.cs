@@ -15,9 +15,9 @@ namespace TcpUtility
 
         public event EventHandler<DataReceivedEventArgs> DataReceived;
 
-        public DataStreamingTcpServer(int listeningPort)
+        public DataStreamingTcpServer(ITcpServer tcpServer)
         {
-            tcpServer = new TcpServer(listeningPort);
+            this.tcpServer = tcpServer;
         }
 
         public void Start()
