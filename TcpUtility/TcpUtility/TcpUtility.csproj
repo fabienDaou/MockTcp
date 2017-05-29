@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CustomEventArgs\ConnectChangedEventArgs.cs" />
     <Compile Include="CustomEventArgs\AcceptedClientEventArgs.cs" />
     <Compile Include="AcceptedTcpClient.cs" />
     <Compile Include="CustomEventArgs\DataReceivedEventArgs.cs" />
@@ -49,6 +50,7 @@
     <Compile Include="Logger.cs" />
     <Compile Include="LogLevel.cs" />
     <Compile Include="MultiSourceTcpListener.cs" />
+    <Compile Include="Client.cs" />
     <Compile Include="TcpServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
