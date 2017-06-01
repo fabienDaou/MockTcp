@@ -9,7 +9,9 @@ namespace TcpUtility
 {
     public sealed class Client : IDisposable
     {
-        private TcpClient tcpClient;
+        private TcpClient connectedTcpClient;
+        private readonly object connectedTcpClientLock = new object();
+
         private readonly IPEndPoint remoteEndPoint;
         
         private CancellationTokenSource cancelConnectTokenSource;
@@ -17,7 +19,7 @@ namespace TcpUtility
 
         private bool isConnectedAlreadyCalled;
         private bool isDisposed;
-        private readonly object isDisposedLock = new object();
+        private readonly object disposingLock = new object();
 
         public event EventHandler<ConnectChangedEventArgs> ConnectChanged;
 
@@ -30,14 +32,14 @@ namespace TcpUtility
 
         public void Dispose()
         {
-            lock (isDisposedLock)
+            lock (disposingLock)
             {
-                if (!isDisposed)
-                {
-                    cancelConnectTokenSource.Dispose();
-                    tcpClient.Close();
-                    isDisposed = true;
-                }
+                cancelConnectTokenSource?.Dispose();
+                cancelConnectTokenSource = null;
+
+                Disconnect();
+
+                isDisposed = true;
             }
         }
 
@@ -63,20 +65,35 @@ namespace TcpUtility
         {
             try
             {
-                tcpClient = new TcpClient();
-                var connectTask = tcpClient.ConnectAsync(remoteEndPoint.Address, remoteEndPoint.Port);
+                var connectingTcpClient = new TcpClient();
+                var connectTask = connectingTcpClient.ConnectAsync(remoteEndPoint.Address, remoteEndPoint.Port);
                 connectTask.Wait(cancelConnectToken);
+
+                lock (connectedTcpClientLock)
+                {
+                    connectedTcpClient = connectingTcpClient;
+                }
+
                 ConnectChanged?.Invoke(this, new ConnectChangedEventArgs(true));
             }
-            catch (OperationCanceledException)
+            catch (Exception ex) when (ex is OperationCanceledException || ex is AggregateException)
             {
                 ConnectChanged?.Invoke(this, new ConnectChangedEventArgs(false));
             }
         }
 
+        private void Disconnect()
+        {
+            lock (connectedTcpClientLock)
+            {
+                connectedTcpClient?.Close();
+                connectedTcpClient = null;
+            }
+        }
+
         private void ThrowIfDisposed()
         {
-            lock (isDisposedLock)
+            lock (disposingLock)
             {
                 if (isDisposed)
                 {
