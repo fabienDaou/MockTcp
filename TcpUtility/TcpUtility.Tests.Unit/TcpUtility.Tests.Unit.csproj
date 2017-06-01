@@ -72,6 +72,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClientTests.cs" />
     <Compile Include="DataStreamingTcpServerTests.cs" />
     <Compile Include="TcpServerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

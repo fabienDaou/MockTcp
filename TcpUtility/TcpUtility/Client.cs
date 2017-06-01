@@ -88,6 +88,7 @@ namespace TcpUtility
             {
                 connectedTcpClient?.Close();
                 connectedTcpClient = null;
+                ConnectChanged?.Invoke(this, new ConnectChangedEventArgs(false));
             }
         }
 
