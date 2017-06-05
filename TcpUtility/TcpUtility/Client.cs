@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -21,7 +23,10 @@ namespace TcpUtility
         private bool isDisposed;
         private readonly object disposingLock = new object();
 
+        private readonly byte[] receiveBuffer = new byte[1024];
+
         public event EventHandler<ConnectChangedEventArgs> ConnectChanged;
+        public event EventHandler<DataReceivedEventArgs> DataReceived;
 
         public Client(IPEndPoint remoteEndPoint)
         {
@@ -51,7 +56,9 @@ namespace TcpUtility
                 return Task.FromResult(0);
             }
             isConnectedAlreadyCalled = true;
-            return Task.Factory.StartNew(() => Connect(), cancelConnectToken);
+            var connectTask = Task.Factory.StartNew(() => Connect(), cancelConnectToken)
+                .ContinueWith(t => BeginReceive(), cancelConnectToken);
+            return connectTask;
         }
 
         public void Close()
@@ -59,6 +66,45 @@ namespace TcpUtility
             ThrowIfDisposed();
             cancelConnectTokenSource.Cancel();
             Dispose();
+        }
+
+        private void BeginReceive()
+        {
+            try
+            {
+                var stream = connectedTcpClient.GetStream();
+                stream.BeginRead(receiveBuffer, 0, receiveBuffer.Length, ReceiveAsyncCallback, stream);
+            }
+            catch (IOException)
+            {
+                Logger.Log($"Exception when trying to read the socket. Socket is closed. Remote endpoint: {remoteEndPoint}", LogLevel.Warning);
+            }
+        }
+
+        private void ReceiveAsyncCallback(IAsyncResult ar)
+        {
+            try
+            {
+                var stream = (NetworkStream)ar.AsyncState;
+                var receivedBytes = stream.EndRead(ar);
+
+                if (receivedBytes == 0)
+                {
+                    Close();
+                }
+                else
+                {
+                    DataReceived?.Invoke(this, new DataReceivedEventArgs(receiveBuffer.Take(receivedBytes).ToArray()));
+                    BeginReceive();
+                }
+            }
+            catch (IOException)
+            {
+                Close();
+            }
+            catch (ObjectDisposedException)
+            {
+            }
         }
 
         private void Connect()
