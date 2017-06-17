@@ -9,7 +9,7 @@ using TcpUtility.CustomEventArgs;
 
 namespace TcpUtility
 {
-    public sealed class Client : IDisposable
+    public sealed class DataStreamingClient : IDisposable
     {
         private TcpClient connectedTcpClient;
         private readonly object connectedTcpClientLock = new object();
@@ -28,7 +28,7 @@ namespace TcpUtility
         public event EventHandler<ConnectChangedEventArgs> ConnectChanged;
         public event EventHandler<DataReceivedEventArgs> DataReceived;
 
-        public Client(IPEndPoint remoteEndPoint)
+        public DataStreamingClient(IPEndPoint remoteEndPoint)
         {
             this.remoteEndPoint = remoteEndPoint;
             cancelConnectTokenSource = new CancellationTokenSource();
@@ -144,7 +144,7 @@ namespace TcpUtility
             {
                 if (isDisposed)
                 {
-                    throw new ObjectDisposedException(nameof(Client));
+                    throw new ObjectDisposedException(nameof(DataStreamingClient));
                 }
             }
         }

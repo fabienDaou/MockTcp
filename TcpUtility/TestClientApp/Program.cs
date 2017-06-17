@@ -17,7 +17,7 @@ namespace TestClientApp
             Task.Factory.StartNew(() =>
             {
                 var localEndPoint = new IPEndPoint(IPAddress.Loopback, 10002);
-                var client = new Client(localEndPoint);
+                var client = new DataStreamingClient(localEndPoint);
                 client.ConnectChanged += Client_ConnectChanged;
                 client.DataReceived += Client_DataReceived;
 

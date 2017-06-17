@@ -7,7 +7,7 @@ using System.Net.Sockets;
 namespace TcpUtility.Tests.Unit
 {
     [TestFixture]
-    public class ClientTests
+    public class DataStreamingClientTests
     {
         private const int LISTENING_PORT = 3000;
         private TcpListener tcpListener;
@@ -30,7 +30,7 @@ namespace TcpUtility.Tests.Unit
         [Category("Integration")]
         public void ConnectAsync_TcpListenerAvailable_ClientConnects()
         {
-            using (var client = new Client(new IPEndPoint(IPAddress.Loopback, LISTENING_PORT)))
+            using (var client = new DataStreamingClient(new IPEndPoint(IPAddress.Loopback, LISTENING_PORT)))
             {
                 // Arrange
                 int timesConnectedChangedRaised = 0;
@@ -56,7 +56,7 @@ namespace TcpUtility.Tests.Unit
         [Category("Integration")]
         public void ConnectAsync_TcpListenerNotAvailable_ClientDoesNotConnect()
         {
-            using(var client = new Client(new IPEndPoint(IPAddress.Loopback, LISTENING_PORT + 1)))
+            using(var client = new DataStreamingClient(new IPEndPoint(IPAddress.Loopback, LISTENING_PORT + 1)))
             {
                 // Arrange
                 int timesConnectedChangedRaised = 0;
@@ -87,7 +87,7 @@ namespace TcpUtility.Tests.Unit
             int timesConnectedChangedRaised = 0;
             var actualConnectedStates = new List<bool>();
 
-            var client = new Client(new IPEndPoint(IPAddress.Loopback, LISTENING_PORT));
+            var client = new DataStreamingClient(new IPEndPoint(IPAddress.Loopback, LISTENING_PORT));
             client.ConnectChanged += (sender, args) =>
             {
                 timesConnectedChangedRaised++;
@@ -114,7 +114,7 @@ namespace TcpUtility.Tests.Unit
         public void Close_CallTwice_ThrowObjectDisposedException()
         {
             // Arrange
-            using (var client = new Client(new IPEndPoint(IPAddress.Loopback, LISTENING_PORT)))
+            using (var client = new DataStreamingClient(new IPEndPoint(IPAddress.Loopback, LISTENING_PORT)))
             {
                 // Assert
                 Assert.Throws<ObjectDisposedException>(() =>
@@ -129,7 +129,7 @@ namespace TcpUtility.Tests.Unit
         public void Dispose_CallTwice_DoesNotThrow()
         {
             // Arrange
-            using (var client = new Client(new IPEndPoint(IPAddress.Loopback, LISTENING_PORT)))
+            using (var client = new DataStreamingClient(new IPEndPoint(IPAddress.Loopback, LISTENING_PORT)))
             {
                 // Assert
                 Assert.DoesNotThrow(() =>
