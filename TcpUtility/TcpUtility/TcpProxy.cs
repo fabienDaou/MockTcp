@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using TcpUtility.CustomEventArgs;
 
 namespace TcpUtility
@@ -76,66 +75,6 @@ namespace TcpUtility
             {
                 ForwardDataToDestination(acceptedTcpClient, e.Data);
             }
-        }
-    }
-
-    public class ProxyConfiguration
-    {
-        private readonly Dictionary<IPAddress, ProxyRule> rules = new Dictionary<IPAddress, ProxyRule>();
-
-        public int ListeningPort { get; }
-
-        public ProxyConfiguration(int listeningPort)
-        {
-            ListeningPort = listeningPort;
-        }
-
-        public void AddRule(ProxyRule rule)
-        {
-            rules.Add(rule.Source, rule);
-        }
-
-        public ProxyRule FindRule(IPAddress source)
-        {
-            rules.TryGetValue(source, out ProxyRule ruleFound);
-            return ruleFound;
-        }
-    }
-
-    public class ProxyRule
-    {
-        public IPAddress Source { get; }
-        public IPEndPoint Destination { get; }
-
-        public ProxyRule(IPAddress source, IPEndPoint destination)
-        {
-            Source = source;
-            Destination = destination;
-        }
-    }
-
-    public class ProxySession
-    {
-        public AcceptedTcpClient SourceClient { get; }
-        public DataStreamingClient DestinationClient { get; }
-
-        public ProxySession(AcceptedTcpClient sourceClient, DataStreamingClient destinationClient)
-        {
-            SourceClient = sourceClient;
-            DestinationClient = destinationClient;
-            DestinationClient.DataReceived += DestinationClient_DataReceived;
-        }
-
-        public void Close()
-        {
-            // Closing the AcceptedTcpClient is the responsibility of the DataStreamingTcpServer.
-            DestinationClient.DataReceived -= DestinationClient_DataReceived;
-            DestinationClient.Close();
-        }
-
-        private void DestinationClient_DataReceived(object sender, DataReceivedEventArgs e)
-        {
-            SourceClient.Send(e.Data);
         }
     }
 }

@@ -51,6 +51,9 @@
     <Compile Include="LogLevel.cs" />
     <Compile Include="MultiSourceTcpListener.cs" />
     <Compile Include="DataStreamingClient.cs" />
+    <Compile Include="ProxyConfiguration.cs" />
+    <Compile Include="ProxyRule.cs" />
+    <Compile Include="ProxySession.cs" />
     <Compile Include="TcpProxy.cs" />
     <Compile Include="TcpServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
