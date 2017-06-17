@@ -143,7 +143,7 @@ namespace TcpUtility.Tests.Unit
 
         [Test]
         [Category("Integration")]
-        public void Write_TcpListenerAvailable_WriteSuccessful()
+        public void Write_TcpListenerAvailable_SendSuccessful()
         {
             using (var client = new DataStreamingClient(new IPEndPoint(IPAddress.Loopback, LISTENING_PORT)))
             {
@@ -164,7 +164,7 @@ namespace TcpUtility.Tests.Unit
                 var readTask = acceptedTcpClient.GetStream().ReadAsync(buffer, 0, buffer.Length);
 
                 // Act
-                var result = client.Write(dataToWrite);
+                var result = client.Send(dataToWrite);
                 readTask.Wait(TimeSpan.FromMilliseconds(100));
                 // Assert
                 Assert.IsTrue(result);

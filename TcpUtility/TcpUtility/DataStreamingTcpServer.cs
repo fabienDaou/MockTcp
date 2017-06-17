@@ -51,11 +51,11 @@ namespace TcpUtility
             var acceptedTcpClient = args.TcpClient;
             Logger.Log($"New client accepted.{args.TcpClient.RemoteEndPoint}", LogLevel.Info);
 
-            ReadFromTcpClient(acceptedTcpClient);
+            ReceiveFromTcpClient(acceptedTcpClient);
             acceptedTcpClient.Close();
         }
 
-        private void ReadFromTcpClient(AcceptedTcpClient tcpClient)
+        private void ReceiveFromTcpClient(AcceptedTcpClient tcpClient)
         {
             CancellationToken cancelReceiveToken;
             lock (isStartedLock)

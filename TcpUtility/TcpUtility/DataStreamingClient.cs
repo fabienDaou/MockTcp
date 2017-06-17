@@ -82,7 +82,7 @@ namespace TcpUtility
             return connectTask;
         }
 
-        public bool Write(byte[] dataToWrite)
+        public bool Send(byte[] dataToWrite)
         {
             var isSuccessful = false;
             if (IsConnected)
