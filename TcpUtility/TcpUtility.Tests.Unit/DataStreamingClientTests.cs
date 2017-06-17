@@ -81,7 +81,7 @@ namespace TcpUtility.Tests.Unit
 
         [Test]
         [Category("Integration")]
-        public void Close_ClientConnected_ClientDisonnected()
+        public void Close_ClientConnected_ClientDisconnected()
         {
             // Arrange
             int timesConnectedChangedRaised = 0;

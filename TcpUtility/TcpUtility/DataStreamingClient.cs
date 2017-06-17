@@ -25,6 +25,27 @@ namespace TcpUtility
 
         private readonly byte[] receiveBuffer = new byte[1024];
 
+        private bool isConnected;
+        private readonly object isConnectedLock = new object();
+
+        public bool IsConnected
+        {
+            get
+            {
+                lock (isConnectedLock)
+                {
+                    return isConnected;
+                }
+            }
+            private set
+            {
+                lock (isConnectedLock)
+                {
+                    isConnected = value;
+                }
+            }
+        }
+        
         public event EventHandler<ConnectChangedEventArgs> ConnectChanged;
         public event EventHandler<DataReceivedEventArgs> DataReceived;
 
@@ -56,7 +77,7 @@ namespace TcpUtility
                 return Task.FromResult(0);
             }
             isConnectedAlreadyCalled = true;
-            var connectTask = Task.Factory.StartNew(() => Connect(), cancelConnectToken)
+            var connectTask = Task.Run(() => Connect(), cancelConnectToken)
                 .ContinueWith(t => BeginReceive(), cancelConnectToken);
             return connectTask;
         }
@@ -70,14 +91,17 @@ namespace TcpUtility
 
         private void BeginReceive()
         {
-            try
+            if (IsConnected)
             {
-                var stream = connectedTcpClient.GetStream();
-                stream.BeginRead(receiveBuffer, 0, receiveBuffer.Length, ReceiveAsyncCallback, stream);
-            }
-            catch (IOException)
-            {
-                Logger.Log($"Exception when trying to read the socket. Socket is closed. Remote endpoint: {remoteEndPoint}", LogLevel.Warning);
+                try
+                {
+                    var stream = connectedTcpClient.GetStream();
+                    stream.BeginRead(receiveBuffer, 0, receiveBuffer.Length, ReceiveAsyncCallback, stream);
+                }
+                catch (IOException)
+                {
+                    Logger.Log($"Exception when trying to read the socket. Socket is closed. Remote endpoint: {remoteEndPoint}", LogLevel.Warning);
+                }
             }
         }
 
@@ -120,10 +144,12 @@ namespace TcpUtility
                     connectedTcpClient = connectingTcpClient;
                 }
 
+                IsConnected = true;
                 ConnectChanged?.Invoke(this, new ConnectChangedEventArgs(true));
             }
             catch (Exception ex) when (ex is OperationCanceledException || ex is AggregateException)
             {
+                IsConnected = false;
                 ConnectChanged?.Invoke(this, new ConnectChangedEventArgs(false));
             }
         }
@@ -134,6 +160,7 @@ namespace TcpUtility
             {
                 connectedTcpClient?.Close();
                 connectedTcpClient = null;
+                IsConnected = false;
                 ConnectChanged?.Invoke(this, new ConnectChangedEventArgs(false));
             }
         }
