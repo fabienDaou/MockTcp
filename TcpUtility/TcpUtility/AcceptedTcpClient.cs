@@ -39,7 +39,11 @@ namespace TcpUtility
                 tcpClient.GetStream().Write(data, 0, data.Length);
                 isSuccessful = true;
             }
-            catch (Exception ex) when (ex is IOException || ex is ObjectDisposedException)
+            catch (ObjectDisposedException)
+            {
+                // This can only happen when done intentionally.
+            }
+            catch (Exception ex) when (ex is IOException || ex is InvalidOperationException)
             {
                 Logger.Log($"Failed to write data to the network. {ex.Message}", LogLevel.Warning);
             }
