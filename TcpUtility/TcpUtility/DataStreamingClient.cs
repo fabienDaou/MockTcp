@@ -82,6 +82,32 @@ namespace TcpUtility
             return connectTask;
         }
 
+        public bool Write(byte[] dataToWrite)
+        {
+            var isSuccessful = false;
+            if (IsConnected)
+            {
+                try
+                {
+                    connectedTcpClient.GetStream().Write(dataToWrite, 0, dataToWrite.Length);
+                    isSuccessful = true;
+
+                }
+                catch (ObjectDisposedException)
+                {
+                    // This can only happen when the client is purposely disposed.
+                }
+                catch (Exception ex) when (ex is IOException || ex is InvalidOperationException)
+                {
+                    // TODO: proper mechanism to recover.
+                    Logger.Log("Write action failed, the client is not connected anymore to the remote host.", LogLevel.Warning);
+                    Close();
+                }
+            }
+            return isSuccessful;
+        }
+
+        // TODO: only creator of object should call Dispose.
         public void Close()
         {
             ThrowIfDisposed();
@@ -101,6 +127,7 @@ namespace TcpUtility
                 catch (IOException)
                 {
                     Logger.Log($"Exception when trying to read the socket. Socket is closed. Remote endpoint: {remoteEndPoint}", LogLevel.Warning);
+                    Close();
                 }
             }
         }

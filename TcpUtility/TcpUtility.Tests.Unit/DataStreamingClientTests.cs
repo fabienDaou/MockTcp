@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 
 namespace TcpUtility.Tests.Unit
 {
@@ -137,6 +138,39 @@ namespace TcpUtility.Tests.Unit
                     client.Dispose();
                     client.Dispose();
                 });
+            }
+        }
+
+        [Test]
+        [Category("Integration")]
+        public void Write_TcpListenerAvailable_WriteSuccessful()
+        {
+            using (var client = new DataStreamingClient(new IPEndPoint(IPAddress.Loopback, LISTENING_PORT)))
+            {
+                // Arrange
+                var dataToWrite = new byte[]
+                {
+                    0x00,
+                    0x01,
+                    0x02
+                };
+                var acceptTcpClientTask = tcpListener.AcceptTcpClientAsync();
+                var connectionTask = client.ConnectAsync();
+                connectionTask.Wait(TimeSpan.FromSeconds(1));
+
+                var acceptedTcpClient = acceptTcpClientTask.Result;
+
+                var buffer = new byte[1024];
+                var readTask = acceptedTcpClient.GetStream().ReadAsync(buffer, 0, buffer.Length);
+
+                // Act
+                var result = client.Write(dataToWrite);
+                readTask.Wait(TimeSpan.FromMilliseconds(100));
+                // Assert
+                Assert.IsTrue(result);
+                var receivedData = new byte[readTask.Result];
+                Array.Copy(buffer, receivedData, receivedData.Length);
+                Assert.AreEqual(dataToWrite, receivedData);
             }
         }
     }
