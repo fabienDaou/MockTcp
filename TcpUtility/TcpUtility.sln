@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TcpUtility.Tests.Unit", "Tc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestClientApp", "TestClientApp\TestClientApp.csproj", "{5A2EA1E7-322D-4794-A4A8-D5DC5D79B392}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProxyApp", "TestProxyApp\TestProxyApp.csproj", "{8DBE12F0-99BE-473B-BA6F-D2CF48DF7301}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{5A2EA1E7-322D-4794-A4A8-D5DC5D79B392}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5A2EA1E7-322D-4794-A4A8-D5DC5D79B392}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5A2EA1E7-322D-4794-A4A8-D5DC5D79B392}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8DBE12F0-99BE-473B-BA6F-D2CF48DF7301}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DBE12F0-99BE-473B-BA6F-D2CF48DF7301}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8DBE12F0-99BE-473B-BA6F-D2CF48DF7301}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8DBE12F0-99BE-473B-BA6F-D2CF48DF7301}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

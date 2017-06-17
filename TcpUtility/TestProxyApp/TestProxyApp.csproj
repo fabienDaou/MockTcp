@@ -4,15 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{8FF3ABC9-422C-43D3-BF18-81A0F4A37C49}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TcpUtility</RootNamespace>
-    <AssemblyName>TcpUtility</AssemblyName>
+    <ProjectGuid>{8DBE12F0-99BE-473B-BA6F-D2CF48DF7301}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>TestProxyApp</RootNamespace>
+    <AssemblyName>TestProxyApp</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -40,20 +42,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CustomEventArgs\ConnectChangedEventArgs.cs" />
-    <Compile Include="CustomEventArgs\AcceptedClientEventArgs.cs" />
-    <Compile Include="AcceptedTcpClient.cs" />
-    <Compile Include="CustomEventArgs\DataReceivedEventArgs.cs" />
-    <Compile Include="DataStreamingTcpServer.cs" />
-    <Compile Include="ITcpListener.cs" />
-    <Compile Include="ITcpServer.cs" />
-    <Compile Include="Logger.cs" />
-    <Compile Include="LogLevel.cs" />
-    <Compile Include="MultiSourceTcpListener.cs" />
-    <Compile Include="DataStreamingClient.cs" />
-    <Compile Include="TcpProxy.cs" />
-    <Compile Include="TcpServer.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TcpUtility\TcpUtility.csproj">
+      <Project>{8ff3abc9-422c-43d3-bf18-81a0f4a37c49}</Project>
+      <Name>TcpUtility</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
